@@ -5,7 +5,7 @@ import axiosInstance from '../lib/axiosInstance'
 import ScriptFragmentEditor from '../components/ScriptFragmentEditor'
 import CharacterSettingsEditor from '../components/CharacterSettingsEditor'
 import NarrationVoiceEditor from '../components/NarrationVoiceEditor'
-import VoiceInfoModal from '../components/VoiceInfoModal'  // ✅ 추가
+import VoiceInfoModal from '../components/VoiceInfoModal'
 
 export default function ScriptEditPage() {
   const { id: identificationNumber } = useParams()
@@ -15,46 +15,54 @@ export default function ScriptEditPage() {
   const [speakerOptions, setSpeakerOptions] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)  // ✅ 추가
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [page, setPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
+  const size = 5
 
   const updateSpeakerOptions = (characterData, narrationVoiceType) => {
-    const narrationOption = { label: `나레이션`, value: 'narration' }
-    const characterOptions = characterData.map((char) => ({ label: `등장인물 ${char.name}`, value: char.characterKey }))
+    const narrationOption = { label: '나레이션', value: 'narration' }
+    const characterOptions = characterData.map(char => ({ label: `등장인물 ${char.name}`, value: char.characterKey }))
     setSpeakerOptions([narrationOption, ...characterOptions])
   }
 
   const normalizeSpeaker = (speakerString) => speakerString === '나레이션 - narration' ? 'narration' : speakerString
 
-  const fetchData = async () => {
+  const fetchData = async (pageNum = 0) => {
+    setLoading(true)
     try {
       const [scriptRes, characterRes, narrationRes] = await Promise.all([
-        axiosInstance.post('/api/script/generated', { identificationNumber }),
+        axiosInstance.post(`/api/script/generated?page=${pageNum}&size=${size}`, {
+          identificationNumber
+        }),
         axiosInstance.get(`/api/character/${identificationNumber}`),
         axiosInstance.get(`/api/script/narration/${identificationNumber}`),
       ])
-      setFragments(scriptRes.data)
+      console.log(`📦 page: ${pageNum}`, scriptRes.data.content)
+  
+      setFragments(scriptRes.data.content)
+      setTotalPages(scriptRes.data.totalPages)
       setCharacters(characterRes.data)
       setNarrationVoice(narrationRes.data.voiceType)
       updateSpeakerOptions(characterRes.data, narrationRes.data.voiceType)
     } catch (err) {
-      const message = err.response?.data?.message || '데이터를 불러오지 못했습니다.'
-      setError(message)
+      setError(err.response?.data?.message || '데이터를 불러오지 못했습니다.')
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchData()
-  }, [identificationNumber])
+    fetchData(page)
+  }, [identificationNumber, page])
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       <main className="max-w-4xl mx-auto p-6 space-y-10">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">스크립트 편집</h1>
-          <button onClick={() => setIsModalOpen(true)} className="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">스크립트 편집</h1>
+          <button onClick={() => setIsModalOpen(true)} className="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded shadow">
             🎤 보이스 설명
           </button>
         </div>
@@ -67,17 +75,17 @@ export default function ScriptEditPage() {
             <CharacterSettingsEditor
               identificationNumber={identificationNumber}
               characters={characters}
-              onSuccess={fetchData}
+              onSuccess={() => fetchData(page)}
             />
 
             <NarrationVoiceEditor
               identificationNumber={identificationNumber}
               voiceType={narrationVoice}
-              onSuccess={fetchData}
+              onSuccess={() => fetchData(page)}
             />
 
             <div className="space-y-6">
-              {fragments.map((fragment) => (
+              {fragments.map(fragment => (
                 <ScriptFragmentEditor
                   key={fragment.index}
                   identificationNumber={identificationNumber}
@@ -87,15 +95,35 @@ export default function ScriptEditPage() {
                   }}
                   index={fragment.index}
                   speakerOptions={speakerOptions}
-                  onSuccess={fetchData}
+                  onSuccess={() => fetchData(page)}
                 />
               ))}
+            </div>
+
+            <div className="flex justify-between items-center mt-10 border-t pt-4">
+              <button
+                onClick={() => setPage(prev => Math.max(prev - 1, 0))}
+                disabled={page === 0}
+                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 shadow"
+              >
+                ◀ 이전 페이지
+              </button>
+              <span className="text-gray-600 text-sm">
+                {page + 1} / {totalPages} 페이지
+              </span>
+              <button
+                onClick={() => setPage(prev => Math.min(prev + 1, totalPages - 1))}
+                disabled={page >= totalPages - 1}
+                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 shadow"
+              >
+                다음 페이지 ▶
+              </button>
             </div>
           </>
         )}
       </main>
 
-      <VoiceInfoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> {/* ✅ 모달 */}
+      <VoiceInfoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   )
 }
