@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../lib/axiosInstance'
 
 export default function LoginPage() {
   const [id, setId] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
+
+  const navigate = useNavigate()  // ✅ 추가
 
   const handleLogin = async () => {
     setError(null)
@@ -15,8 +18,7 @@ export default function LoginPage() {
       })
 
       alert('✅ 로그인 성공!')
-      // 예: 페이지 이동
-      // window.location.href = "/script-list"
+      navigate('/scripts')  // ✅ 성공 시 /scripts로 이동
 
     } catch (err) {
       const message = err.response?.data?.message || '로그인 실패'

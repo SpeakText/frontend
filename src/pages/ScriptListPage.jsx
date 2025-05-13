@@ -40,11 +40,16 @@ export default function ScriptListPage() {
         setCompletedTotalPages(completedData?.totalPages ?? 1)
       } catch (err) {
         console.error('스크립트 목록 불러오기 실패:', err)
+
+        if (err.response?.status === 401) {
+          console.warn('유효하지 않은 세션. 로그인 페이지로 이동합니다.')
+          navigate('/login')
+        }
       }
     }
 
     fetchScripts()
-  }, [inProgressPage, completedPage])
+  }, [inProgressPage, completedPage, navigate])
 
   const handleClick = (id) => {
     navigate(`/script-edit/${id}`)
