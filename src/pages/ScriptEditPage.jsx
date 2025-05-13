@@ -5,6 +5,7 @@ import axiosInstance from '../lib/axiosInstance'
 import ScriptFragmentEditor from '../components/ScriptFragmentEditor'
 import CharacterSettingsEditor from '../components/CharacterSettingsEditor'
 import NarrationVoiceEditor from '../components/NarrationVoiceEditor'
+import VoiceInfoModal from '../components/VoiceInfoModal'  // ✅ 추가
 
 export default function ScriptEditPage() {
   const { id: identificationNumber } = useParams()
@@ -14,25 +15,15 @@ export default function ScriptEditPage() {
   const [speakerOptions, setSpeakerOptions] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)  // ✅ 추가
 
   const updateSpeakerOptions = (characterData, narrationVoiceType) => {
-    const narrationOption = {
-      label: `나레이션`,
-      value: 'narration',
-    }
-
-    const characterOptions = characterData.map((char) => ({
-      label: `등장인물 ${char.name}`,
-      value: char.characterKey,
-    }))
-
+    const narrationOption = { label: `나레이션`, value: 'narration' }
+    const characterOptions = characterData.map((char) => ({ label: `등장인물 ${char.name}`, value: char.characterKey }))
     setSpeakerOptions([narrationOption, ...characterOptions])
   }
 
-  const normalizeSpeaker = (speakerString) => {
-    if (speakerString === '나레이션 - narration') return 'narration'
-    return speakerString
-  }
+  const normalizeSpeaker = (speakerString) => speakerString === '나레이션 - narration' ? 'narration' : speakerString
 
   const fetchData = async () => {
     try {
@@ -41,11 +32,9 @@ export default function ScriptEditPage() {
         axiosInstance.get(`/api/character/${identificationNumber}`),
         axiosInstance.get(`/api/script/narration/${identificationNumber}`),
       ])
-
       setFragments(scriptRes.data)
       setCharacters(characterRes.data)
       setNarrationVoice(narrationRes.data.voiceType)
-
       updateSpeakerOptions(characterRes.data, narrationRes.data.voiceType)
     } catch (err) {
       const message = err.response?.data?.message || '데이터를 불러오지 못했습니다.'
@@ -53,18 +42,6 @@ export default function ScriptEditPage() {
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleCharacterUpdate = async () => {
-    const res = await axiosInstance.get(`/api/character/${identificationNumber}`)
-    setCharacters(res.data)
-    updateSpeakerOptions(res.data, narrationVoice)
-  }
-
-  const handleNarrationUpdate = async () => {
-    const res = await axiosInstance.get(`/api/script/narration/${identificationNumber}`)
-    setNarrationVoice(res.data.voiceType)
-    updateSpeakerOptions(characters, res.data.voiceType)
   }
 
   useEffect(() => {
@@ -75,7 +52,12 @@ export default function ScriptEditPage() {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <main className="max-w-4xl mx-auto p-6 space-y-10">
-        <h1 className="text-2xl font-bold">스크립트 편집</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">스크립트 편집</h1>
+          <button onClick={() => setIsModalOpen(true)} className="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
+            🎤 보이스 설명
+          </button>
+        </div>
 
         {loading && <p className="text-gray-500">불러오는 중...</p>}
         {error && <p className="text-red-500">{error}</p>}
@@ -83,13 +65,13 @@ export default function ScriptEditPage() {
         {!loading && !error && (
           <>
             <CharacterSettingsEditor
-              identificationNumber={identificationNumber}  // ✅ 수정됨
+              identificationNumber={identificationNumber}
               characters={characters}
               onSuccess={fetchData}
             />
 
             <NarrationVoiceEditor
-              identificationNumber={identificationNumber}  // ✅ 수정됨
+              identificationNumber={identificationNumber}
               voiceType={narrationVoice}
               onSuccess={fetchData}
             />
@@ -106,12 +88,14 @@ export default function ScriptEditPage() {
                   index={fragment.index}
                   speakerOptions={speakerOptions}
                   onSuccess={fetchData}
-              />
+                />
               ))}
             </div>
           </>
         )}
       </main>
+
+      <VoiceInfoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> {/* ✅ 모달 */}
     </div>
   )
 }

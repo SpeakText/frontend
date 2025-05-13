@@ -2,8 +2,20 @@ import React, { useState, useEffect } from 'react'
 import axiosInstance from '../lib/axiosInstance'
 import CustomSelect from './CustomSelect'
 
-const VOICE_OPTIONS = ['NO_VOICE', 'ASH', 'ALLOY', 'CORAL', 'ONYX']
-
+const VOICE_OPTIONS = [
+  'NO_VOICE',  // 기본값 (음성 없음)
+  'ALL0Y',     // 부드럽고 중성적 (기존)
+  'ASH',       // 감성적이고 섬세한 남성형 (기존)
+  'BALLAD',    // 서사적이고 드라마틱한 여성형 (신규)
+  'CORAL',     // 청명하고 맑은 여성형 (기존)
+  'ECHO',      // 따뜻하고 친근한 남성형 (추가)
+  'FABLE',     // 동화적이고 서정적인 여성형 (추가)
+  'NOVA',      // 밝고 에너지 넘치는 여성형 (추가)
+  'ONYX',      // 저음의 카리스마 있는 남성형 (기존)
+  'SAGE',      // 지혜롭고 차분한 남성형 (추가)
+  'SHIMMER',   // 감정 표현이 풍부한 여성형 (추가)
+  'VERSE'      // 시적이고 리드미컬한 중성형 (추가)
+]
 export default function CharacterSettingsEditor({ identificationNumber, characters, onSuccess }) {
   const [characterList, setCharacterList] = useState(characters)
   const [saving, setSaving] = useState(false)
