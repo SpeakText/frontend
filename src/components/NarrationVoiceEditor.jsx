@@ -17,7 +17,7 @@ const VOICE_OPTIONS = [
     'VERSE'
 ]
 
-export default function NarrationVoiceEditor({ scriptId, voiceType, onSuccess }) {
+export default function NarrationVoiceEditor({ identificationNumber, voiceType, onSuccess }) {
   const [selectedVoice, setSelectedVoice] = useState(voiceType)
   const [saving, setSaving] = useState(false)
 
@@ -25,8 +25,8 @@ export default function NarrationVoiceEditor({ scriptId, voiceType, onSuccess })
     setSaving(true)
     try {
         await axiosInstance.put('/api/script/narration', {
-            identificationNumber: '9788930705479',
-            voiceType: 'coral',
+            identificationNumber: identificationNumber,
+            voiceType: selectedVoice,
         })
       onSuccess()
     } catch (err) {

@@ -18,15 +18,14 @@ export default function ScriptEditPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
+  const [pageInput, setPageInput] = useState(1)
   const size = 5
 
   const updateSpeakerOptions = (characterData, narrationVoiceType) => {
-    const narrationOption = { label: '나레이션', value: 'narration' }
+    const narrationOption = { label: '나레이션', value: '나레이션 - narration' }
     const characterOptions = characterData.map(char => ({ label: `등장인물 ${char.name}`, value: char.characterKey }))
     setSpeakerOptions([narrationOption, ...characterOptions])
   }
-
-  const normalizeSpeaker = (speakerString) => speakerString === '나레이션 - narration' ? 'narration' : speakerString
 
   const fetchData = async (pageNum = 0) => {
     setLoading(true)
@@ -55,6 +54,10 @@ export default function ScriptEditPage() {
   useEffect(() => {
     fetchData(page)
   }, [identificationNumber, page])
+
+  useEffect(() => {
+    setPageInput(page + 1)
+  }, [page])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -89,10 +92,7 @@ export default function ScriptEditPage() {
                 <ScriptFragmentEditor
                   key={fragment.index}
                   identificationNumber={identificationNumber}
-                  fragment={{
-                    ...fragment,
-                    speaker: normalizeSpeaker(fragment.speaker)
-                  }}
+                  fragment={fragment}
                   index={fragment.index}
                   speakerOptions={speakerOptions}
                   onSuccess={() => fetchData(page)}
@@ -108,9 +108,29 @@ export default function ScriptEditPage() {
               >
                 ◀ 이전 페이지
               </button>
-              <span className="text-gray-600 text-sm">
-                {page + 1} / {totalPages} 페이지
-              </span>
+
+              <div className="flex items-center space-x-2">
+                <span className="text-gray-600 text-sm">
+                  {page + 1} / {totalPages} 페이지
+                </span>
+
+                <input
+                  type="number"
+                  value={pageInput}
+                  min={1}
+                  max={totalPages}
+                  onChange={e => setPageInput(Number(e.target.value))}
+                  className="w-16 px-2 py-1 border rounded text-center text-sm"
+                />
+
+                <button
+                  onClick={() => setPage(Math.min(Math.max(pageInput - 1, 0), totalPages - 1))}
+                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded shadow"
+                >
+                  이동
+                </button>
+              </div>
+
               <button
                 onClick={() => setPage(prev => Math.min(prev + 1, totalPages - 1))}
                 disabled={page >= totalPages - 1}
