@@ -4,7 +4,7 @@ import CustomSelect from './CustomSelect'
 
 const VOICE_OPTIONS = [
   'NO_VOICE',  // 기본값 (음성 없음)
-  'ALL0Y',     // 부드럽고 중성적 (기존)
+  'ALLOY',     // 부드럽고 중성적 (기존)
   'ASH',       // 감성적이고 섬세한 남성형 (기존)
   'BALLAD',    // 서사적이고 드라마틱한 여성형 (신규)
   'CORAL',     // 청명하고 맑은 여성형 (기존)
