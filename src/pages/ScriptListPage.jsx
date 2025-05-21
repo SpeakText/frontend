@@ -28,21 +28,16 @@ export default function ScriptListPage() {
           })
         ])
 
-        const inProgressData = inProgressRes.data
-        const completedData = completedRes.data
+        setInProgress(inProgressRes.data?.content ?? [])
+        setInProgressLast(inProgressRes.data?.last ?? true)
+        setInProgressTotalPages(inProgressRes.data?.totalPages ?? 1)
 
-        setInProgress(inProgressData?.content ?? [])
-        setInProgressLast(inProgressData?.last ?? true)
-        setInProgressTotalPages(inProgressData?.totalPages ?? 1)
-
-        setCompleted(completedData?.content ?? [])
-        setCompletedLast(completedData?.last ?? true)
-        setCompletedTotalPages(completedData?.totalPages ?? 1)
+        setCompleted(completedRes.data?.content ?? [])
+        setCompletedLast(completedRes.data?.last ?? true)
+        setCompletedTotalPages(completedRes.data?.totalPages ?? 1)
       } catch (err) {
         console.error('스크립트 목록 불러오기 실패:', err)
-
         if (err.response?.status === 401) {
-          console.warn('유효하지 않은 세션. 로그인 페이지로 이동합니다.')
           navigate('/login')
         }
       }
@@ -57,89 +52,82 @@ export default function ScriptListPage() {
 
   const ScriptItem = ({ script }) => (
     <li
-      className="p-4 border rounded hover:bg-gray-50 cursor-pointer"
       onClick={() => handleClick(script.identificationNumber)}
+      className="p-5 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:ring-1 hover:ring-gray-300 transition cursor-pointer"
     >
-      <h2 className="text-lg font-semibold">{script.title}</h2>
-      <p className="text-sm text-gray-600">
-        총 문장 수: {script.totalFragments} / 현재 진행: {script.fragmentCount}
-      </p>
+      <h2 className="text-lg font-semibold text-gray-800">{script.title}</h2>
     </li>
+  )
+
+  const Pagination = ({ page, last, setPage, totalPages }) => (
+    <div className="mt-4 flex justify-between items-center">
+      <button
+        className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md shadow-sm disabled:opacity-50 transition"
+        disabled={page === 0}
+        onClick={() => setPage(prev => Math.max(prev - 1, 0))}
+      >
+        이전
+      </button>
+      <span className="text-sm text-gray-700">{page + 1} / {totalPages}</span>
+      <button
+        className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md shadow-sm disabled:opacity-50 transition"
+        disabled={last}
+        onClick={() => setPage(prev => prev + 1)}
+      >
+        다음
+      </button>
+    </div>
   )
 
   return (
     <>
-      <Header />
-      <div className="max-w-4xl mx-auto p-6 space-y-12">
-        {/* 진행 중인 스크립트 */}
-        <div>
-          <h1 className="text-2xl font-bold mb-4">진행 중인 작품</h1>
-          {inProgress.length === 0 ? (
-            <p className="text-gray-500">진행 중인 작품이 없습니다.</p>
-          ) : (
-            <>
-              <ul className="space-y-4">
-                {inProgress.map(script => (
-                  <ScriptItem key={script.identificationNumber} script={script} />
-                ))}
-              </ul>
-              <div className="mt-4 flex justify-between items-center">
-                <button
-                  className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-                  disabled={inProgressPage === 0}
-                  onClick={() => setInProgressPage(prev => Math.max(prev - 1, 0))}
-                >
-                  이전
-                </button>
-                <span className="self-center text-gray-700">
-                  {inProgressPage + 1} / {inProgressTotalPages}
-                </span>
-                <button
-                  className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-                  disabled={inProgressLast}
-                  onClick={() => setInProgressPage(prev => prev + 1)}
-                >
-                  다음
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main className="max-w-4xl mx-auto px-4 py-12 space-y-12">
+          {/* 진행 중 */}
+          <section className="bg-white rounded-xl shadow-lg px-6 py-8 space-y-6">
+            <h1 className="text-2xl font-bold text-gray-900">진행 중인 작품</h1>
+            {inProgress.length === 0 ? (
+              <p className="text-gray-500">진행 중인 작품이 없습니다.</p>
+            ) : (
+              <>
+                <ul className="space-y-4">
+                  {inProgress.map(script => (
+                    <ScriptItem key={script.identificationNumber} script={script} />
+                  ))}
+                </ul>
+                <Pagination
+                  page={inProgressPage}
+                  last={inProgressLast}
+                  setPage={setInProgressPage}
+                  totalPages={inProgressTotalPages}
+                />
+              </>
+            )}
+          </section>
 
-        {/* 완료된 스크립트 */}
-        <div>
-          <h1 className="text-2xl font-bold mb-4">완료된 스크립트</h1>
-          {completed.length === 0 ? (
-            <p className="text-gray-500">완료된 스크립트가 없습니다.</p>
-          ) : (
-            <>
-              <ul className="space-y-4">
-                {completed.map(script => (
-                  <ScriptItem key={script.identificationNumber} script={script} />
-                ))}
-              </ul>
-              <div className="mt-4 flex justify-between items-center">
-                <button
-                  className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-                  disabled={completedPage === 0}
-                  onClick={() => setCompletedPage(prev => Math.max(prev - 1, 0))}
-                >
-                  이전
-                </button>
-                <span className="self-center text-gray-700">
-                  {completedPage + 1} / {completedTotalPages}
-                </span>
-                <button
-                  className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-                  disabled={completedLast}
-                  onClick={() => setCompletedPage(prev => prev + 1)}
-                >
-                  다음
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+          {/* 완료됨 */}
+          <section className="bg-white rounded-xl shadow-lg px-6 py-8 space-y-6">
+            <h1 className="text-2xl font-bold text-gray-900">완료된 스크립트</h1>
+            {completed.length === 0 ? (
+              <p className="text-gray-500">완료된 스크립트가 없습니다.</p>
+            ) : (
+              <>
+                <ul className="space-y-4">
+                  {completed.map(script => (
+                    <ScriptItem key={script.identificationNumber} script={script} />
+                  ))}
+                </ul>
+                <Pagination
+                  page={completedPage}
+                  last={completedLast}
+                  setPage={setCompletedPage}
+                  totalPages={completedTotalPages}
+                />
+              </>
+            )}
+          </section>
+        </main>
       </div>
     </>
   )

@@ -3,7 +3,8 @@ import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignUpPage'
 import BookInspectionPage from './pages/BookInspectionPage'
 import ScriptEditPage from './pages/ScriptEditPage'
-import ScriptListPage from './pages/ScriptListPage' // ✅ 추가
+import ScriptListPage from './pages/ScriptListPage'
+import MergePublishPage from './pages/MergePublishPage'
 
 import './index.css'
 
@@ -17,6 +18,7 @@ function App() {
         <Route path="/inspection" element={<BookInspectionPage />} />
         <Route path="/scripts" element={<ScriptListPage />} /> 
         <Route path="/script-edit/:id" element={<ScriptEditPage />} />
+        <Route path="/merge-publish" element={<MergePublishPage />} />
       </Routes>
     </BrowserRouter>
   )
