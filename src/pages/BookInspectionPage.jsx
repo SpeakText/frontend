@@ -6,7 +6,7 @@ export default function BookInspectionPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    coverUrl: '',
+    coverImage: null,
     price: '',
     identificationNumber: '',
     txtFile: null,
@@ -20,7 +20,8 @@ export default function BookInspectionPage() {
   }
 
   const handleFileChange = (e) => {
-    setFormData(prev => ({ ...prev, txtFile: e.target.files[0] }))
+    const { name, files } = e.target
+    setFormData(prev => ({ ...prev, [name]: files[0] }))
   }
 
   const handleSubmit = async (e) => {
@@ -84,14 +85,14 @@ export default function BookInspectionPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">커버 이미지 URL</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">커버 이미지</label>
                 <input
-                  name="coverUrl"
-                  value={formData.coverUrl}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition placeholder:text-gray-400"
-                  placeholder="https://example.com/cover.jpg"
+                  type="file"
+                  name="coverImage"
+                  accept="image/*"
+                  onChange={handleFileChange}
                   required
+                  className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
               </div>
 
