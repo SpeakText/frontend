@@ -3,18 +3,22 @@ import axiosInstance from '../lib/axiosInstance'
 import Header from '../components/Header'
 
 export default function MergePublishPage() {
-  const [books, setBooks] = useState([])
-  const [page, setPage] = useState(0)
-  const [totalPages, setTotalPages] = useState(1)
+  const [inProgressBooks, setInProgressBooks] = useState([])
+  const [completedBooks, setCompletedBooks] = useState([])
+  const [inProgressPage, setInProgressPage] = useState(0)
+  const [completedPage, setCompletedPage] = useState(0)
+  const [inProgressTotalPages, setInProgressTotalPages] = useState(1)
+  const [completedTotalPages, setCompletedTotalPages] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  const fetchBooks = async (pageNum) => {
-    if (loading || pageNum >= totalPages) return
+  const fetchBooks = async (pageNum, isCompleted = true) => {
+    if (loading) return
     setLoading(true)
     try {
+      const endpoint = isCompleted ? '/api/script/progress/completed' : '/api/script/progress/in-progress'
       const response = await axiosInstance.get(
-        `/api/script/progress/completed?page=${pageNum}&size=10`
+        `${endpoint}?page=${pageNum}&size=10`
       )
       const newBooks = response.data.content
 
@@ -25,14 +29,23 @@ export default function MergePublishPage() {
         })
       )
 
-      setBooks((prev) => {
-        const existingIds = new Set(prev.map((b) => b.identificationNumber))
-        const merged = [...prev, ...updated.filter((b) => !existingIds.has(b.identificationNumber))]
-        return merged
-      })
-
-      setTotalPages(response.data.totalPages)
-      setPage(pageNum)
+      if (isCompleted) {
+        setCompletedBooks((prev) => {
+          const existingIds = new Set(prev.map((b) => b.identificationNumber))
+          const merged = [...prev, ...updated.filter((b) => !existingIds.has(b.identificationNumber))]
+          return merged
+        })
+        setCompletedTotalPages(response.data.totalPages)
+        setCompletedPage(pageNum)
+      } else {
+        setInProgressBooks((prev) => {
+          const existingIds = new Set(prev.map((b) => b.identificationNumber))
+          const merged = [...prev, ...updated.filter((b) => !existingIds.has(b.identificationNumber))]
+          return merged
+        })
+        setInProgressTotalPages(response.data.totalPages)
+        setInProgressPage(pageNum)
+      }
     } catch {
       setError('작품 목록을 불러오는 중 오류가 발생했습니다.')
     } finally {
@@ -50,7 +63,8 @@ export default function MergePublishPage() {
   }
 
   useEffect(() => {
-    fetchBooks(0)
+    fetchBooks(0, true)  // 완료된 작품
+    fetchBooks(0, false) // 진행 중인 작품
   }, [])
 
   const handleMergeRequest = async (id) => {
@@ -59,8 +73,8 @@ export default function MergePublishPage() {
         identificationNumber: id,
       })
       alert('병합 요청이 전송되었습니다.')
-      setBooks([]) // 초기화 후 재요청
-      fetchBooks(0)
+      setCompletedBooks([]) // 초기화 후 재요청
+      fetchBooks(0, true)
     } catch {
       alert('병합 요청 실패')
     }
@@ -72,8 +86,8 @@ export default function MergePublishPage() {
         identificationNumber: id,
       })
       alert('출판 요청 완료')
-      setBooks([]) // 초기화 후 재요청
-      fetchBooks(0)
+      setCompletedBooks([]) // 초기화 후 재요청
+      fetchBooks(0, true)
     } catch {
       alert('출판 요청 실패')
     }
@@ -89,6 +103,8 @@ export default function MergePublishPage() {
         return '병합 요청 완료'
       case 'MERGED_VOICE_GENERATED':
         return '출판 가능'
+      case 'DONE':
+        return '출판 완료'
       default:
         return '알 수 없음'
     }
@@ -128,9 +144,41 @@ export default function MergePublishPage() {
               병합 진행 중
             </span>
           )}
+          {book.mergeStatus === 'DONE' && (
+            <span className="px-4 py-1 bg-green-100 text-green-800 rounded">
+              출판 완료
+            </span>
+          )}
         </div>
       </div>
     </li>
+  )
+
+  const BookList = ({ books, title, onLoadMore, hasMore }) => (
+    <section className="bg-white rounded-xl shadow-lg px-6 py-8 space-y-6">
+      <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+      {books.length === 0 ? (
+        <p className="text-gray-500">작품이 없습니다.</p>
+      ) : (
+        <>
+          <ul className="space-y-4">
+            {books.map((book) => (
+              <BookItem key={book.identificationNumber} book={book} />
+            ))}
+          </ul>
+          {hasMore && (
+            <div className="flex justify-center pt-4">
+              <button
+                onClick={onLoadMore}
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md shadow-sm transition"
+              >
+                더 보기
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </section>
   )
 
   return (
@@ -140,21 +188,20 @@ export default function MergePublishPage() {
         <h1 className="text-2xl font-bold text-gray-900">오디오북 병합 및 출판</h1>
         {error && <p className="text-red-500">{error}</p>}
         {loading && <p className="text-gray-500">로딩 중...</p>}
-        <ul className="space-y-4">
-          {books.map((book) => (
-            <BookItem key={book.identificationNumber} book={book} />
-          ))}
-        </ul>
-        {page + 1 < totalPages && (
-          <div className="flex justify-center pt-6">
-            <button
-              onClick={() => fetchBooks(page + 1)}
-              className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
-            >
-              더 보기
-            </button>
-          </div>
-        )}
+        
+        <BookList
+          books={inProgressBooks}
+          title="스크립트 생성 진행 중인 작품"
+          onLoadMore={() => fetchBooks(inProgressPage + 1, false)}
+          hasMore={inProgressPage + 1 < inProgressTotalPages}
+        />
+
+        <BookList
+          books={completedBooks}
+          title="스크립트 생성 완료된 작품"
+          onLoadMore={() => fetchBooks(completedPage + 1, true)}
+          hasMore={completedPage + 1 < completedTotalPages}
+        />
       </main>
     </div>
   )
