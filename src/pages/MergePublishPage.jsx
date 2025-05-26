@@ -33,7 +33,7 @@ export default function MergePublishPage() {
 
       setTotalPages(response.data.totalPages)
       setPage(pageNum)
-    } catch (err) {
+    } catch {
       setError('작품 목록을 불러오는 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
@@ -42,9 +42,9 @@ export default function MergePublishPage() {
 
   const fetchMergeStatus = async (id) => {
     try {
-      const response = await axiosInstance.get(`/api/voice/${id}/merged-voice/generated`)
-      return response.data.isGenerated ? 'MERGED' : 'MERGEABLE'
-    } catch (err) {
+      const response = await axiosInstance.get(`/api/voice/${id}/voice-status`)
+      return response.data.status
+    } catch {
       return 'UNKNOWN'
     }
   }
@@ -61,7 +61,7 @@ export default function MergePublishPage() {
       alert('병합 요청이 전송되었습니다.')
       setBooks([]) // 초기화 후 재요청
       fetchBooks(0)
-    } catch (err) {
+    } catch {
       alert('병합 요청 실패')
     }
   }
@@ -74,8 +74,23 @@ export default function MergePublishPage() {
       alert('출판 요청 완료')
       setBooks([]) // 초기화 후 재요청
       fetchBooks(0)
-    } catch (err) {
+    } catch {
       alert('출판 요청 실패')
+    }
+  }
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'NOT_GENERATED':
+        return '음성 생성 대기 중'
+      case 'FRAGMENTS_VOICE_GENERATED':
+        return '병합 가능'
+      case 'MERGE_REQUESTED':
+        return '병합 요청 완료'
+      case 'MERGED_VOICE_GENERATED':
+        return '출판 가능'
+      default:
+        return '알 수 없음'
     }
   }
 
@@ -88,16 +103,11 @@ export default function MergePublishPage() {
         <div>
           <h2 className="text-lg font-semibold text-gray-900">{book.title}</h2>
           <p className="text-sm text-gray-600 mt-1">
-            상태:{' '}
-            {book.mergeStatus === 'MERGEABLE'
-              ? '병합 대기 중'
-              : book.mergeStatus === 'MERGED'
-              ? '병합 완료됨'
-              : '알 수 없음'}
+            상태: {getStatusText(book.mergeStatus)}
           </p>
         </div>
         <div className="flex gap-3">
-          {book.mergeStatus === 'MERGEABLE' && (
+          {book.mergeStatus === 'FRAGMENTS_VOICE_GENERATED' && (
             <button
               onClick={() => handleMergeRequest(book.identificationNumber)}
               className="px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
@@ -105,13 +115,18 @@ export default function MergePublishPage() {
               병합 요청
             </button>
           )}
-          {book.mergeStatus === 'MERGED' && (
+          {book.mergeStatus === 'MERGED_VOICE_GENERATED' && (
             <button
               onClick={() => handlePublish(book.identificationNumber)}
               className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
             >
               출판하기
             </button>
+          )}
+          {book.mergeStatus === 'MERGE_REQUESTED' && (
+            <span className="px-4 py-1 bg-yellow-100 text-yellow-800 rounded">
+              병합 진행 중
+            </span>
           )}
         </div>
       </div>
