@@ -4,7 +4,6 @@ import Header from '../components/Header'
 import axiosInstance from '../lib/axiosInstance'
 import CharacterSettingsEditor from '../components/CharacterSettingsEditor'
 import NarrationVoiceEditor from '../components/NarrationVoiceEditor'
-import VoiceInfoModal from '../components/VoiceInfoModal'
 import ScriptFragmentListItem from '../components/ScriptFragmentListItem'
 import FragmentEditModal from '../components/FragmentEditModal'
 
@@ -16,7 +15,6 @@ export default function ScriptEditPage() {
   const [speakerOptions, setSpeakerOptions] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isStartModalOpen, setIsStartModalOpen] = useState(false)
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
@@ -76,12 +74,6 @@ export default function ScriptEditPage() {
               className="bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold px-4 py-2 rounded shadow transition"
             >
               🎧 음성 생성 시작
-            </button>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded shadow"
-            >
-              🎤 보이스 설명
             </button>
           </div>
         </div>
@@ -156,8 +148,6 @@ export default function ScriptEditPage() {
           </>
         )}
       </main>
-
-      <VoiceInfoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
       {editingFragment && (
         <FragmentEditModal

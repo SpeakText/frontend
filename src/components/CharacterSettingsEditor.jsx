@@ -3,19 +3,18 @@ import axiosInstance from '../lib/axiosInstance'
 import CustomSelect from './CustomSelect'
 
 const VOICE_OPTIONS = [
-  'NO_VOICE',  // 기본값 (음성 없음)
-  'ALLOY',     // 부드럽고 중성적 (기존)
-  'ASH',       // 감성적이고 섬세한 남성형 (기존)
-  'BALLAD',    // 서사적이고 드라마틱한 여성형 (신규)
-  'CORAL',     // 청명하고 맑은 여성형 (기존)
-  'ECHO',      // 따뜻하고 친근한 남성형 (추가)
-  'FABLE',     // 동화적이고 서정적인 여성형 (추가)
-  'NOVA',      // 밝고 에너지 넘치는 여성형 (추가)
-  'ONYX',      // 저음의 카리스마 있는 남성형 (기존)
-  'SAGE',      // 지혜롭고 차분한 남성형 (추가)
-  'SHIMMER',   // 감정 표현이 풍부한 여성형 (추가)
-  'VERSE'      // 시적이고 리드미컬한 중성형 (추가)
+  { label: '남성 저음 (MALE_LOW)', value: 'MALE_LOW' },
+  { label: '남성 중간음 (MALE_MID)', value: 'MALE_MID' },
+  { label: '남성 고음 (MALE_HIGH)', value: 'MALE_HIGH' },
+  { label: '남성 독특한 음색 (MALE_UNIQUE)', value: 'MALE_UNIQUE' },
+  { label: '여성 저음 (FEMALE_LOW)', value: 'FEMALE_LOW' },
+  { label: '여성 중간음 (FEMALE_MID)', value: 'FEMALE_MID' },
+  { label: '여성 고음 (FEMALE_HIGH)', value: 'FEMALE_HIGH' },
+  { label: '할머니 음색 (FEMALE_ELDERLY)', value: 'FEMALE_ELDERLY' },
+  { label: '중성 독특한 음색 (NEUTRAL_UNIQUE)', value: 'NEUTRAL_UNIQUE' },
+  { label: '음성 없음 (NO_VOICE)', value: 'NO_VOICE' }
 ]
+
 export default function CharacterSettingsEditor({ identificationNumber, characters, onSuccess }) {
   const [characterList, setCharacterList] = useState(characters)
   const [saving, setSaving] = useState(false)
@@ -61,8 +60,8 @@ export default function CharacterSettingsEditor({ identificationNumber, characte
             onChange={(e) => handleChange(idx, 'name', e.target.value)}
             className="border border-gray-300 rounded-lg p-2 flex-1 focus:ring-gray-600 focus:border-gray-600"
           />
-          <CustomSelect
-            options={VOICE_OPTIONS.map(v => ({ label: v, value: v }))}
+         <CustomSelect
+            options={VOICE_OPTIONS}
             value={char.voiceType}
             onChange={(val) => handleChange(idx, 'voiceType', val)}
           />

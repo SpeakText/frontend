@@ -3,18 +3,15 @@ import axiosInstance from '../lib/axiosInstance'
 import CustomSelect from './CustomSelect'
 
 const VOICE_OPTIONS = [
-    'NO_VOICE',
-    'ALL0Y',
-    'ASH',
-    'BALLAD',
-    'CORAL',
-    'ECHO',
-    'FABLE',
-    'NOVA',
-    'ONYX',
-    'SAGE',
-    'SHIMMER',
-    'VERSE'
+  { label: '부드러운 여성 음성 (FEMALE_SOFT)', value: 'FEMALE_SOFT' },
+  { label: '명확한 여성 음성 (FEMALE_CLEAR)', value: 'FEMALE_CLEAR' },
+  { label: '캐주얼한 여성 음성 (FEMALE_CASUAL)', value: 'FEMALE_CASUAL' },
+  { label: '밝은 여성 음성 (FEMALE_BRIGHT)', value: 'FEMALE_BRIGHT' },
+  { label: '어린이 여성 음성 (FEMALE_CHILD)', value: 'FEMALE_CHILD' },
+  { label: '중후한 남성 음성 (MALE_DEEP)', value: 'MALE_DEEP' },
+  { label: '부드러운 남성 음성 (MALE_SOFT)', value: 'MALE_SOFT' },
+  { label: '중립적인 남성 음성 (MALE_NEUTRAL)', value: 'MALE_NEUTRAL' },
+  { label: '음성 없음 (NO_VOICE)', value: 'NO_VOICE' }
 ]
 
 export default function NarrationVoiceEditor({ identificationNumber, voiceType, onSuccess }) {
@@ -40,7 +37,7 @@ export default function NarrationVoiceEditor({ identificationNumber, voiceType, 
     <div className="bg-white border border-gray-200 rounded-lg shadow-md p-6 space-y-4">
       <h2 className="text-xl font-bold">나레이션 설정</h2>
       <CustomSelect
-        options={VOICE_OPTIONS.map(v => ({ label: v, value: v }))}
+        options={VOICE_OPTIONS}
         value={selectedVoice}
         onChange={setSelectedVoice}
       />
