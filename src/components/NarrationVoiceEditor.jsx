@@ -1,10 +1,7 @@
-// ✅ NarrationVoiceEditor.jsx (foldable section like CharacterSettingsEditor)
-
 import React, { useState } from 'react'
 import axiosInstance from '../lib/axiosInstance'
 import CustomSelect from './CustomSelect'
-import { ChevronDownIcon, ChevronUpIcon, MicrophoneIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline'
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline' // 기존 CircleIcon → TriangleIcon
+import { ChevronDownIcon, ChevronUpIcon, MicrophoneIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 
 const VOICE_OPTIONS = [
   { label: '부드러운 여성 음성 (FEMALE_SOFT)', value: 'FEMALE_SOFT' },
@@ -47,20 +44,20 @@ export default function NarrationVoiceEditor({ identificationNumber, voiceType, 
         onClick={() => setIsOpen(prev => !prev)}
       >
         <div className="flex items-center gap-2 text-slate-700">
-          <MicrophoneIcon className="w-5 h-5 text-indigo-500" />
-          <h2 className="text-xl font-semibold">나레이션 보이스 설정</h2>
+          <MicrophoneIcon className="w-5 h-5 text-green-600" />
+          <h2 className="text-xl" style={{ fontFamily: 'Ownglyph_corncorn-Rg, sans-serif' }}>나레이션 보이스 설정</h2>
         </div>
         <div className="flex items-center gap-2">
-        {isVoiceMissing && !isOpen && (
-          <div className="flex items-center gap-1 text-xs text-red-500">
-            <ExclamationTriangleIcon className="w-4 h-4" />
-            <span>보이스 미설정</span>
-          </div>
-        )}
+          {!isOpen && isVoiceMissing && (
+            <div className="flex items-center gap-1 text-xs text-green-600">
+              <ExclamationTriangleIcon className="w-4 h-4" />
+              <span>보이스 미설정</span>
+            </div>
+          )}
           {isOpen ? (
-            <ChevronUpIcon className="w-5 h-5 text-slate-500" />
+            <ChevronUpIcon className="w-5 h-5 text-green-600" />
           ) : (
-            <ChevronDownIcon className="w-5 h-5 text-slate-500" />
+            <ChevronDownIcon className="w-5 h-5 text-green-600" />
           )}
         </div>
       </div>
@@ -76,7 +73,7 @@ export default function NarrationVoiceEditor({ identificationNumber, voiceType, 
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm disabled:opacity-50"
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm disabled:opacity-50"
             >
               {saving ? '저장 중...' : '저장'}
             </button>

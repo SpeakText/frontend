@@ -55,7 +55,7 @@ export default function ScriptListPage() {
       onClick={() => handleClick(script.identificationNumber)}
       className="p-5 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:ring-1 hover:ring-gray-300 transition cursor-pointer"
     >
-      <h2 className="text-[17px] font-normal text-gray-800 tracking-tight">{script.title}</h2>
+      <h2 className="text-[17px] font-normal text-gray-800 tracking-tight" style={{ fontFamily: 'Ownglyph_corncorn-Rg, sans-serif' }}>{script.title}</h2>
     </li>
   )
 
@@ -86,7 +86,7 @@ export default function ScriptListPage() {
         {/* 진행 중 */}
         <section className="bg-white rounded-2xl shadow-md px-6 py-8 space-y-6 border border-gray-100">
           <h1 className="text-2xl sm:text-3xl text-gray-700 tracking-tight" style={{ fontFamily: 'Ownglyph_corncorn-Rg' }}>
-            진행 중인 작품
+            스크립트화 진행 중인 작품
           </h1>
           {inProgress.length === 0 ? (
             <p className="text-gray-500">진행 중인 작품이 없습니다.</p>
@@ -110,7 +110,7 @@ export default function ScriptListPage() {
         {/* 완료됨 */}
         <section className="bg-white rounded-2xl shadow-md px-6 py-8 space-y-6 border border-gray-100">
           <h1 className="text-2xl sm:text-3xl text-gray-700 tracking-tight" style={{ fontFamily: 'Ownglyph_corncorn-Rg' }}>
-            완료된 스크립트
+            스크립트가 생성된 작품
           </h1>
           {completed.length === 0 ? (
             <p className="text-gray-500">완료된 스크립트가 없습니다.</p>

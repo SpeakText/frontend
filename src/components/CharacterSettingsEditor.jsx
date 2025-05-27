@@ -58,19 +58,19 @@ export default function CharacterSettingsEditor({ identificationNumber, characte
         onClick={() => setIsOpen(prev => !prev)}
       >
         <div className="flex items-center gap-2 text-slate-800">
-          <UsersIcon className="w-5 h-5 text-indigo-500" />
-          <h2 className="text-xl font-semibold">등장인물 설정</h2>
+          <UsersIcon className="w-5 h-5 text-green-600" />
+          <h2 className="text-xl" style={{ fontFamily: 'Ownglyph_corncorn-Rg, sans-serif' }}>등장인물 설정</h2>
         </div>
         <div className="flex items-center gap-2">
           {!isOpen && hasUnassignedVoice && (
-            <span className="text-xs text-red-500 flex items-center gap-1">
+            <span className="text-xs text-green-600 flex items-center gap-1">
               <ExclamationTriangleIcon className="w-4 h-4" /> 보이스 미설정
             </span>
           )}
           {isOpen ? (
-            <ChevronUpIcon className="w-5 h-5 text-slate-500" />
+            <ChevronUpIcon className="w-5 h-5 text-green-600" />
           ) : (
-            <ChevronDownIcon className="w-5 h-5 text-slate-500" />
+            <ChevronDownIcon className="w-5 h-5 text-green-600" />
           )}
         </div>
       </div>
@@ -86,7 +86,7 @@ export default function CharacterSettingsEditor({ identificationNumber, characte
                 type="text"
                 value={char.name}
                 onChange={(e) => handleChange(idx, 'name', e.target.value)}
-                className="w-full border border-slate-300 bg-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-slate-400 focus:outline-none"
+                className="w-full border border-slate-300 bg-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-green-400 focus:outline-none"
                 placeholder="이름 입력"
               />
               <CustomSelect
@@ -102,7 +102,7 @@ export default function CharacterSettingsEditor({ identificationNumber, characte
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-4 py-2 text-sm border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 disabled:opacity-50 transition"
+              className="px-4 py-2 text-sm border border-green-600 text-green-700 rounded-md hover:bg-green-100 disabled:opacity-50 transition"
             >
               {saving ? '저장 중...' : '저장'}
             </button>

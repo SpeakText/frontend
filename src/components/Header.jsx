@@ -23,33 +23,33 @@ export default function Header() {
     <>
       <header className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        <h1
-          onClick={() => navigate('/inspection')}
-          className="cursor-pointer transition-all"
-        >
-          <span
-            className="text-3xl sm:text-4xl text-gray-800"
-            style={{ fontFamily: 'Ownglyph_corncorn-Rg, sans-serif' }}
+          <h1
+            onClick={() => navigate('/inspection')}
+            className="cursor-pointer transition-all"
           >
-            글을 말하다
-          </span>
-          <span
-            className="ml-2 text-sm sm:text-base text-gray-500 font-sans"
-          >
-            - 작가 대시보드
-          </span>
-        </h1>
+            <span
+              className="text-3xl sm:text-4xl text-gray-800"
+              style={{ fontFamily: 'Ownglyph_corncorn-Rg, sans-serif' }}
+            >
+              글을 말하다
+            </span>
+            <span
+              className="ml-2 text-sm sm:text-base text-gray-500 font-sans"
+            >
+              - 작가 대시보드
+            </span>
+          </h1>
           <nav className="flex items-center gap-6 text-sm font-medium">
-            <Link to="/inspection" className="text-gray-700 hover:text-blue-600 transition">
+            <Link to="/inspection" className="text-gray-700 hover:text-green-600 transition">
               작품 등록
             </Link>
-            <Link to="/scripts" className="text-gray-700 hover:text-blue-600 transition">
+            <Link to="/scripts" className="text-gray-700 hover:text-green-600 transition">
               스크립트 편집
             </Link>
-            <Link to="/merge-publish" className="text-gray-700 hover:text-blue-600 transition">
+            <Link to="/merge-publish" className="text-gray-700 hover:text-green-600 transition">
               병합 및 출판
             </Link>
-            <Link to="/profile" className="text-gray-700 hover:text-blue-600 transition">
+            <Link to="/profile" className="text-gray-700 hover:text-green-600 transition">
               내 정보
             </Link>
             <button
@@ -62,7 +62,7 @@ export default function Header() {
         </div>
 
         <div
-          className="bg-blue-50 text-blue-800 text-sm text-center py-2 cursor-pointer hover:bg-blue-100 transition"
+          className="bg-green-50 text-green-800 text-sm text-center py-2 cursor-pointer hover:bg-green-100 transition"
           onClick={() => setShowHelp(true)}
         >
           사용 방법 보기
@@ -87,7 +87,7 @@ export default function Header() {
               ×
             </button>
             <div className="flex items-center justify-center mb-6">
-              <InformationCircleIcon className="h-6 w-6 text-blue-500 mr-2" />
+              <InformationCircleIcon className="h-6 w-6 text-green-600 mr-2" />
               <h2 className="text-2xl font-bold text-gray-800">작가 대시보드 사용 방법</h2>
             </div>
             <ol className="list-decimal list-inside text-[16px] leading-relaxed text-gray-700 space-y-4">

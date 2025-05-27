@@ -50,13 +50,13 @@ export default function BookInspectionPage() {
   return (
     <div className="min-h-screen bg-[#FAFAFA] font-['Noto_Sans_KR']">
       <Header />
+
       <main className="max-w-2xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-2xl shadow-xl px-8 py-10 space-y-8 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-md px-8 py-10 space-y-8 border border-gray-100">
           <div className="flex items-center space-x-3">
-            <DocumentArrowUpIcon className="w-6 h-6 text-green-600" />
             <h1
               className="text-2xl sm:text-3xl text-gray-800 tracking-tight"
-              style={{ fontFamily: "'Ownglyph_corncorn-Rg', cursive" }}
+              style={{ fontFamily: "'Ownglyph_corncorn-Rg', sans-serif" }}
             >
               작품 등록 및 검수 요청
             </h1>
@@ -74,7 +74,7 @@ export default function BookInspectionPage() {
                 onChange={handleChange}
                 placeholder="책 제목을 입력하세요"
                 required
-                className="w-full rounded-lg px-4 py-2 border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-green-400 focus:outline-none placeholder:text-gray-400 transition"
+                className="w-full rounded-lg px-4 py-2 border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-green-600 focus:outline-none placeholder:text-gray-400 transition"
               />
             </div>
 
@@ -87,7 +87,7 @@ export default function BookInspectionPage() {
                 rows={4}
                 placeholder="책에 대한 설명을 입력하세요"
                 required
-                className="w-full rounded-lg px-4 py-2 border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-green-400 focus:outline-none placeholder:text-gray-400 transition"
+                className="w-full rounded-lg px-4 py-2 border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-green-600 focus:outline-none placeholder:text-gray-400 transition"
               />
             </div>
 
@@ -99,7 +99,9 @@ export default function BookInspectionPage() {
                 accept="image/*"
                 onChange={handleFileChange}
                 required
-                className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition"
+                className="block w-full text-sm text-gray-700
+                  file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
+                  file:bg-[#e6f1ec] file:text-green-700 hover:file:bg-[#d2e7de] transition"
               />
             </div>
 
@@ -112,7 +114,7 @@ export default function BookInspectionPage() {
                 onChange={handleChange}
                 placeholder="예: 12000"
                 required
-                className="w-full rounded-lg px-4 py-2 border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-green-400 focus:outline-none placeholder:text-gray-400 transition"
+                className="w-full rounded-lg px-4 py-2 border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-green-600 focus:outline-none placeholder:text-gray-400 transition"
               />
             </div>
 
@@ -124,7 +126,7 @@ export default function BookInspectionPage() {
                 onChange={handleChange}
                 placeholder="예: 978-89-01-23456-7"
                 required
-                className="w-full rounded-lg px-4 py-2 border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-green-400 focus:outline-none placeholder:text-gray-400 transition"
+                className="w-full rounded-lg px-4 py-2 border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-green-600 focus:outline-none placeholder:text-gray-400 transition"
               />
             </div>
 
@@ -136,17 +138,19 @@ export default function BookInspectionPage() {
                 accept=".txt"
                 onChange={handleFileChange}
                 required
-                className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-green-50 file:text-green-700 hover:file:bg-green-100 transition"
+                className="block w-full text-sm text-gray-700
+                  file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
+                  file:bg-[#e6f1ec] file:text-green-700 hover:file:bg-[#d2e7de] transition"
               />
             </div>
 
             <div className="pt-4">
-            <button
-              type="submit"
-              className="w-full bg-emerald-400 hover:bg-emerald-500 text-white font-medium py-2 rounded-lg shadow-md transition duration-200"
-            >
-              검수 요청 제출
-            </button>
+              <button
+                type="submit"
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded-lg shadow-md transition duration-200"
+              >
+                검수 요청 제출
+              </button>
             </div>
           </form>
         </div>

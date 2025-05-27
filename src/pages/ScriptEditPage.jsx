@@ -76,7 +76,7 @@ export default function ScriptEditPage() {
       <Header />
       <main className="max-w-5xl mx-auto p-6 space-y-10">
         <div className="border-b pb-4 mb-6 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800">스크립트 편집</h1>
+          <h1 className="text-2xl text-gray-800" style={{ fontFamily: 'Ownglyph_corncorn-Rg, sans-serif' }}>스크립트 편집</h1>
           <div className="flex gap-3">
             <button
               onClick={() => {
