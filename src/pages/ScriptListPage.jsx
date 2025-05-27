@@ -55,7 +55,7 @@ export default function ScriptListPage() {
       onClick={() => handleClick(script.identificationNumber)}
       className="p-5 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:ring-1 hover:ring-gray-300 transition cursor-pointer"
     >
-      <h2 className="text-lg font-semibold text-gray-800">{script.title}</h2>
+      <h2 className="text-[17px] font-normal text-gray-800 tracking-tight">{script.title}</h2>
     </li>
   )
 
@@ -80,55 +80,57 @@ export default function ScriptListPage() {
   )
 
   return (
-    <>
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <main className="max-w-4xl mx-auto px-4 py-12 space-y-12">
-          {/* 진행 중 */}
-          <section className="bg-white rounded-xl shadow-lg px-6 py-8 space-y-6">
-            <h1 className="text-2xl font-bold text-gray-900">진행 중인 작품</h1>
-            {inProgress.length === 0 ? (
-              <p className="text-gray-500">진행 중인 작품이 없습니다.</p>
-            ) : (
-              <>
-                <ul className="space-y-4">
-                  {inProgress.map(script => (
-                    <ScriptItem key={script.identificationNumber} script={script} />
-                  ))}
-                </ul>
-                <Pagination
-                  page={inProgressPage}
-                  last={inProgressLast}
-                  setPage={setInProgressPage}
-                  totalPages={inProgressTotalPages}
-                />
-              </>
-            )}
-          </section>
+    <div className="min-h-screen bg-[#FAFAFA]">
+      <Header />
+      <main className="max-w-4xl mx-auto px-4 py-12 space-y-12">
+        {/* 진행 중 */}
+        <section className="bg-white rounded-2xl shadow-md px-6 py-8 space-y-6 border border-gray-100">
+          <h1 className="text-2xl sm:text-3xl text-gray-700 tracking-tight" style={{ fontFamily: 'Ownglyph_corncorn-Rg' }}>
+            진행 중인 작품
+          </h1>
+          {inProgress.length === 0 ? (
+            <p className="text-gray-500">진행 중인 작품이 없습니다.</p>
+          ) : (
+            <>
+              <ul className="space-y-4">
+                {inProgress.map(script => (
+                  <ScriptItem key={script.identificationNumber} script={script} />
+                ))}
+              </ul>
+              <Pagination
+                page={inProgressPage}
+                last={inProgressLast}
+                setPage={setInProgressPage}
+                totalPages={inProgressTotalPages}
+              />
+            </>
+          )}
+        </section>
 
-          {/* 완료됨 */}
-          <section className="bg-white rounded-xl shadow-lg px-6 py-8 space-y-6">
-            <h1 className="text-2xl font-bold text-gray-900">완료된 스크립트</h1>
-            {completed.length === 0 ? (
-              <p className="text-gray-500">완료된 스크립트가 없습니다.</p>
-            ) : (
-              <>
-                <ul className="space-y-4">
-                  {completed.map(script => (
-                    <ScriptItem key={script.identificationNumber} script={script} />
-                  ))}
-                </ul>
-                <Pagination
-                  page={completedPage}
-                  last={completedLast}
-                  setPage={setCompletedPage}
-                  totalPages={completedTotalPages}
-                />
-              </>
-            )}
-          </section>
-        </main>
-      </div>
-    </>
+        {/* 완료됨 */}
+        <section className="bg-white rounded-2xl shadow-md px-6 py-8 space-y-6 border border-gray-100">
+          <h1 className="text-2xl sm:text-3xl text-gray-700 tracking-tight" style={{ fontFamily: 'Ownglyph_corncorn-Rg' }}>
+            완료된 스크립트
+          </h1>
+          {completed.length === 0 ? (
+            <p className="text-gray-500">완료된 스크립트가 없습니다.</p>
+          ) : (
+            <>
+              <ul className="space-y-4">
+                {completed.map(script => (
+                  <ScriptItem key={script.identificationNumber} script={script} />
+                ))}
+              </ul>
+              <Pagination
+                page={completedPage}
+                last={completedLast}
+                setPage={setCompletedPage}
+                totalPages={completedTotalPages}
+              />
+            </>
+          )}
+        </section>
+      </main>
+    </div>
   )
 }

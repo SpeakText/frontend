@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axiosInstance from '../lib/axiosInstance'
 import CustomSelect from './CustomSelect'
+import { UsersIcon, ChevronDownIcon, ChevronUpIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 
 const VOICE_OPTIONS = [
   { label: '남성 저음 (MALE_LOW)', value: 'MALE_LOW' },
@@ -19,6 +20,7 @@ export default function CharacterSettingsEditor({ identificationNumber, characte
   const [characterList, setCharacterList] = useState(characters)
   const [saving, setSaving] = useState(false)
   const [successMessage, setSuccessMessage] = useState(false)
+  const [isOpen, setIsOpen] = useState(false) // default to collapsed
 
   useEffect(() => {
     setCharacterList(characters)
@@ -39,8 +41,6 @@ export default function CharacterSettingsEditor({ identificationNumber, characte
       })
       setSuccessMessage(true)
       onSuccess()
-
-      // ✅ 2초 후 사라지게
       setTimeout(() => setSuccessMessage(false), 2000)
     } catch (err) {
       alert(err.response?.data?.message || '저장 실패')
@@ -49,34 +49,66 @@ export default function CharacterSettingsEditor({ identificationNumber, characte
     }
   }
 
+  const hasUnassignedVoice = characterList.some(c => c.voiceType === 'NO_VOICE')
+
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-md p-6 space-y-4">
-      <h2 className="text-xl font-bold">등장인물 설정</h2>
-      {characterList.map((char, idx) => (
-        <div key={char.characterKey} className="flex gap-4 items-center">
-          <input
-            type="text"
-            value={char.name}
-            onChange={(e) => handleChange(idx, 'name', e.target.value)}
-            className="border border-gray-300 rounded-lg p-2 flex-1 focus:ring-gray-600 focus:border-gray-600"
-          />
-         <CustomSelect
-            options={VOICE_OPTIONS}
-            value={char.voiceType}
-            onChange={(val) => handleChange(idx, 'voiceType', val)}
-          />
+    <div className="bg-[#f8fafc] border border-slate-200 rounded-2xl shadow-sm p-6 space-y-4">
+      <div
+        className="flex items-center justify-between cursor-pointer select-none"
+        onClick={() => setIsOpen(prev => !prev)}
+      >
+        <div className="flex items-center gap-2 text-slate-800">
+          <UsersIcon className="w-5 h-5 text-indigo-500" />
+          <h2 className="text-xl font-semibold">등장인물 설정</h2>
         </div>
-      ))}
-      <div className="flex justify-end items-center gap-4">
-        {successMessage && <span className="text-green-600 text-sm">저장 완료</span>}
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-lg disabled:opacity-50"
-        >
-          {saving ? '저장 중...' : '저장'}
-        </button>
+        <div className="flex items-center gap-2">
+          {!isOpen && hasUnassignedVoice && (
+            <span className="text-xs text-red-500 flex items-center gap-1">
+              <ExclamationTriangleIcon className="w-4 h-4" /> 보이스 미설정
+            </span>
+          )}
+          {isOpen ? (
+            <ChevronUpIcon className="w-5 h-5 text-slate-500" />
+          ) : (
+            <ChevronDownIcon className="w-5 h-5 text-slate-500" />
+          )}
+        </div>
       </div>
+
+      {isOpen && (
+        <div className="space-y-4 mt-2">
+          {characterList.map((char, idx) => (
+            <div
+              key={char.characterKey}
+              className="flex gap-4 items-center bg-white p-3 rounded-md border border-slate-200 shadow-sm"
+            >
+              <input
+                type="text"
+                value={char.name}
+                onChange={(e) => handleChange(idx, 'name', e.target.value)}
+                className="w-full border border-slate-300 bg-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-slate-400 focus:outline-none"
+                placeholder="이름 입력"
+              />
+              <CustomSelect
+                options={VOICE_OPTIONS}
+                value={char.voiceType}
+                onChange={(val) => handleChange(idx, 'voiceType', val)}
+              />
+            </div>
+          ))}
+
+          <div className="flex justify-end items-center gap-4 pt-2">
+            {successMessage && <span className="text-green-600 text-sm">저장 완료</span>}
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="px-4 py-2 text-sm border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 disabled:opacity-50 transition"
+            >
+              {saving ? '저장 중...' : '저장'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

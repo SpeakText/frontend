@@ -23,12 +23,22 @@ export default function Header() {
     <>
       <header className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <h1
-            onClick={() => navigate('/inspection')}
-            className="text-2xl font-semibold tracking-tight text-gray-900 font-display cursor-pointer hover:text-blue-600 transition"
+        <h1
+          onClick={() => navigate('/inspection')}
+          className="cursor-pointer transition-all"
+        >
+          <span
+            className="text-3xl sm:text-4xl text-gray-800"
+            style={{ fontFamily: 'Ownglyph_corncorn-Rg, sans-serif' }}
           >
-            글을 말하다 - 작가 대시보드
-          </h1>
+            글을 말하다
+          </span>
+          <span
+            className="ml-2 text-sm sm:text-base text-gray-500 font-sans"
+          >
+            - 작가 대시보드
+          </span>
+        </h1>
           <nav className="flex items-center gap-6 text-sm font-medium">
             <Link to="/inspection" className="text-gray-700 hover:text-blue-600 transition">
               작품 등록

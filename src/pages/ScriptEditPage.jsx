@@ -6,6 +6,8 @@ import CharacterSettingsEditor from '../components/CharacterSettingsEditor'
 import NarrationVoiceEditor from '../components/NarrationVoiceEditor'
 import ScriptFragmentListItem from '../components/ScriptFragmentListItem'
 import FragmentEditModal from '../components/FragmentEditModal'
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
+import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 
 export default function ScriptEditPage() {
   const { id: identificationNumber } = useParams()
@@ -20,7 +22,7 @@ export default function ScriptEditPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [pageInput, setPageInput] = useState(1)
   const [editingFragment, setEditingFragment] = useState(null)
-  const size = 40 // ✅ 페이지당 40개 보여주도록 설정
+  const size = 40
 
   const updateSpeakerOptions = (characterData, narrationVoiceType) => {
     const narrationOption = { label: '나레이션 - narration', value: '나레이션 - narration' }
@@ -62,18 +64,32 @@ export default function ScriptEditPage() {
     setPageInput(page + 1)
   }, [page])
 
+  const isVoiceComplete = () => {
+    return (
+      narrationVoice !== 'NO_VOICE' &&
+      characters.every(c => c.voiceType && c.voiceType !== 'NO_VOICE')
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       <main className="max-w-5xl mx-auto p-6 space-y-10">
-        <div className="flex justify-between items-center mb-6">
+        <div className="border-b pb-4 mb-6 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-800">스크립트 편집</h1>
           <div className="flex gap-3">
             <button
-              onClick={() => setIsStartModalOpen(true)}
-              className="bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold px-4 py-2 rounded shadow transition"
+              onClick={() => {
+                if (!isVoiceComplete()) {
+                  alert('모든 등장인물과 나레이션의 보이스를 설정해주세요.')
+                  return
+                }
+                setIsStartModalOpen(true)
+              }}
+              disabled={!isVoiceComplete()}
+              className="bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold px-4 py-2 rounded shadow transition disabled:opacity-50"
             >
-              🎧 음성 생성 시작
+              음성 생성 시작
             </button>
           </div>
         </div>
@@ -95,7 +111,7 @@ export default function ScriptEditPage() {
               onSuccess={() => fetchData(page)}
             />
 
-            <div className="border rounded-lg bg-white shadow-sm divide-y">
+            <div className="rounded-2xl bg-[#fdfdfc] shadow-md ring-1 ring-gray-100 divide-y divide-gray-200">
               {fragments.map(fragment => (
                 <ScriptFragmentListItem
                   key={fragment.index}
@@ -106,18 +122,18 @@ export default function ScriptEditPage() {
               ))}
             </div>
 
-            <div className="flex justify-between items-center mt-10 border-t pt-4">
+            <div className="flex justify-center items-center gap-4 mt-10 border-t pt-6">
               <button
                 onClick={() => setPage(prev => Math.max(prev - 1, 0))}
                 disabled={page === 0}
-                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 shadow"
+                className="p-2 rounded-full hover:bg-slate-100 disabled:opacity-40 transition"
               >
-                ◀ 이전 페이지
+                <ChevronLeftIcon className="w-5 h-5 text-slate-600" />
               </button>
 
-              <div className="flex items-center space-x-2">
-                <span className="text-gray-600 text-sm">
-                  {page + 1} / {totalPages} 페이지
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-slate-600">
+                  <span className="font-semibold text-slate-800">{page + 1}</span> / {totalPages}
                 </span>
                 <input
                   type="number"
@@ -125,13 +141,11 @@ export default function ScriptEditPage() {
                   min={1}
                   max={totalPages}
                   onChange={e => setPageInput(Number(e.target.value))}
-                  className="w-16 px-2 py-1 border rounded text-center text-sm"
+                  className="w-16 px-2 py-1 bg-slate-100 rounded-md text-center text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
                 <button
-                  onClick={() =>
-                    setPage(Math.min(Math.max(pageInput - 1, 0), totalPages - 1))
-                  }
-                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded shadow"
+                  onClick={() => setPage(Math.min(Math.max(pageInput - 1, 0), totalPages - 1))}
+                  className="px-3 py-1 text-sm border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 transition"
                 >
                   이동
                 </button>
@@ -140,9 +154,9 @@ export default function ScriptEditPage() {
               <button
                 onClick={() => setPage(prev => Math.min(prev + 1, totalPages - 1))}
                 disabled={page >= totalPages - 1}
-                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 shadow"
+                className="p-2 rounded-full hover:bg-slate-100 disabled:opacity-40 transition"
               >
-                다음 페이지 ▶
+                <ChevronRightIcon className="w-5 h-5 text-slate-600" />
               </button>
             </div>
           </>
