@@ -5,6 +5,7 @@ import BookInspectionPage from './pages/BookInspectionPage'
 import ScriptEditPage from './pages/ScriptEditPage'
 import ScriptListPage from './pages/ScriptListPage'
 import MergePublishPage from './pages/MergePublishPage'
+import VoiceEditPage from './pages/VoiceEditPage'
 
 import './index.css'
 
@@ -19,6 +20,7 @@ function App() {
         <Route path="/scripts" element={<ScriptListPage />} /> 
         <Route path="/script-edit/:id" element={<ScriptEditPage />} />
         <Route path="/merge-publish" element={<MergePublishPage />} />
+        <Route path="/voice-edit/:id" element={<VoiceEditPage />} />
       </Routes>
     </BrowserRouter>
   )
