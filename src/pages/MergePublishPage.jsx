@@ -31,29 +31,25 @@ export default function MergePublishPage() {
       const response = await axiosInstance.get(
         `${endpoint}?page=${pageNum}&size=10`
       )
-      // 더미 상태를 각 책에 임의 부여
-      const newBooks = response.data.content.map(book => ({
-        ...book,
-        mergeStatus:
-          DUMMY_STATUSES[
-            Math.floor(Math.random() * DUMMY_STATUSES.length)
-          ],
-      }))
-
-      if (isCompleted) {
-        setCompletedBooks(prev => {
-          const existingIds = new Set(prev.map(b => b.identificationNumber))
-          const merged = [...prev, ...newBooks.filter(b => !existingIds.has(b.identificationNumber))]
-          return merged
+      const books = response.data.content
+  
+      const updated = await Promise.all(
+        books.map(async book => {
+          try {
+            const res = await axiosInstance.get(`/api/voice/${book.identificationNumber}/voice-status`)
+            return { ...book, mergeStatus: res.data.status }
+          } catch {
+            return { ...book, mergeStatus: 'UNKNOWN' }
+          }
         })
+      )
+  
+      if (isCompleted) {
+        setCompletedBooks(updated)
         setCompletedTotalPages(response.data.totalPages)
         setCompletedPage(pageNum)
       } else {
-        setInProgressBooks(prev => {
-          const existingIds = new Set(prev.map(b => b.identificationNumber))
-          const merged = [...prev, ...newBooks.filter(b => !existingIds.has(b.identificationNumber))]
-          return merged
-        })
+        setInProgressBooks(updated)
         setInProgressTotalPages(response.data.totalPages)
         setInProgressPage(pageNum)
       }
