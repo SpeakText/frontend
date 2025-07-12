@@ -193,14 +193,18 @@ export default function ScriptEditPage() {
               <button
                 onClick={async () => {
                   try {
-                    const res = await axiosInstance.post('/api/voice/generate', {
+                    await axiosInstance.post('/api/voice/generate', {
                       identificationNumber,
                     })
                     alert('음성 생성이 시작되었습니다.')
-                    console.log('응답:', res.data)
                   } catch (err) {
                     console.error('음성 생성 실패:', err)
-                    alert('음성 생성에 실패했습니다. 다시 시도해주세요.')
+                    const errorMessage = err.response?.data?.message
+                    if (errorMessage === '이미 음성이 생성되었습니다.') {
+                      alert('이미 음성이 생성되었습니다.')
+                    } else {
+                      alert('음성 생성에 실패했습니다. 다시 시도해주세요.')
+                    }
                   } finally {
                     setIsStartModalOpen(false)
                   }

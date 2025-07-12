@@ -50,10 +50,14 @@ export default function ScriptListPage() {
     navigate(`/script-edit/${id}`)
   }
 
-  const ScriptItem = ({ script }) => (
+  const ScriptItem = ({ script, isCompleted }) => (
     <li
-      onClick={() => handleClick(script.identificationNumber)}
-      className="p-5 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:ring-1 hover:ring-gray-300 transition cursor-pointer"
+      onClick={() => isCompleted && handleClick(script.identificationNumber)}
+      className={`p-5 bg-white border border-gray-200 rounded-xl shadow-sm ${
+        isCompleted
+          ? 'hover:shadow-md hover:ring-1 hover:ring-gray-300 transition cursor-pointer'
+          : 'opacity-50 cursor-not-allowed'
+      }`}
     >
       <h2 className="text-[17px] font-normal text-gray-800 tracking-tight" style={{ fontFamily: 'Ownglyph_corncorn-Rg, sans-serif' }}>{script.title}</h2>
     </li>
@@ -94,7 +98,7 @@ export default function ScriptListPage() {
             <>
               <ul className="space-y-4">
                 {inProgress.map(script => (
-                  <ScriptItem key={script.identificationNumber} script={script} />
+                  <ScriptItem key={script.identificationNumber} script={script} isCompleted={false} />
                 ))}
               </ul>
               <Pagination
@@ -118,7 +122,7 @@ export default function ScriptListPage() {
             <>
               <ul className="space-y-4">
                 {completed.map(script => (
-                  <ScriptItem key={script.identificationNumber} script={script} />
+                  <ScriptItem key={script.identificationNumber} script={script} isCompleted={true} />
                 ))}
               </ul>
               <Pagination

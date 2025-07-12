@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../lib/axiosInstance'
 
 export default function SignupPage() {
+  const navigate = useNavigate()
   const [form, setForm] = useState({
     id: '',
     password: '',
@@ -9,7 +11,6 @@ export default function SignupPage() {
     email: '',
   })
   const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(null)
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -17,13 +18,11 @@ export default function SignupPage() {
 
   const handleSignup = async () => {
     try {
-      const res = await axiosInstance.post('/api/author/signup', form)
-      setSuccess('회원가입이 완료되었습니다. 이제 로그인하세요!')
-      setError(null)
+      await axiosInstance.post('/api/author/signup', form)
+      navigate('/login')
     } catch (err) {
       const message = err.response?.data?.message || '회원가입 실패'
       setError(message)
-      setSuccess(null)
     }
   }
 
@@ -33,7 +32,6 @@ export default function SignupPage() {
         <h2 className="text-2xl font-bold mb-6 text-center">회원가입</h2>
 
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-        {success && <p className="text-green-600 text-sm mb-4">{success}</p>}
 
         <div className="space-y-4">
           <InputField label="아이디" name="id" value={form.id} onChange={handleChange} />

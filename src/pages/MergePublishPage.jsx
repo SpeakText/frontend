@@ -1,38 +1,25 @@
 import React, { useEffect, useState } from 'react'
 import axiosInstance from '../lib/axiosInstance'
 import Header from '../components/Header'
-import { useParams, useNavigate } from 'react-router-dom'
-
-const DUMMY_STATUSES = [
-  'NOT_GENERATED',
-  'FRAGMENTS_VOICE_GENERATED',
-  'MERGE_REQUESTED',
-  'MERGED_VOICE_GENERATED',
-  'DONE',
-]
+import { useNavigate } from 'react-router-dom'
 
 export default function MergePublishPage() {
-  const [inProgressBooks, setInProgressBooks] = useState([])
   const [completedBooks, setCompletedBooks] = useState([])
-  const [inProgressPage, setInProgressPage] = useState(0)
   const [completedPage, setCompletedPage] = useState(0)
-  const [inProgressTotalPages, setInProgressTotalPages] = useState(1)
   const [completedTotalPages, setCompletedTotalPages] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [audioModal, setAudioModal] = useState({ isOpen: false, src: null, title: null })
 
-  const fetchBooks = async (pageNum, isCompleted = true) => {
-    if (loading) return
+  const fetchBooks = async (pageNum, refresh = false) => {
+    if (loading && !refresh) return
     setLoading(true)
     try {
-      const endpoint = isCompleted
-        ? '/api/script/progress/completed'
-        : '/api/script/progress/in-progress'
       const response = await axiosInstance.get(
-        `${endpoint}?page=${pageNum}&size=10`
+        `/api/script/progress/completed?page=${pageNum}&size=10`
       )
       const books = response.data.content
-  
+
       const updated = await Promise.all(
         books.map(async book => {
           try {
@@ -43,16 +30,10 @@ export default function MergePublishPage() {
           }
         })
       )
-  
-      if (isCompleted) {
-        setCompletedBooks(updated)
-        setCompletedTotalPages(response.data.totalPages)
-        setCompletedPage(pageNum)
-      } else {
-        setInProgressBooks(updated)
-        setInProgressTotalPages(response.data.totalPages)
-        setInProgressPage(pageNum)
-      }
+
+      setCompletedBooks(prev => (refresh ? updated : [...prev, ...updated]))
+      setCompletedTotalPages(response.data.totalPages)
+      setCompletedPage(pageNum)
     } catch {
       setError('작품 목록을 불러오는 중 오류가 발생했습니다.')
     } finally {
@@ -66,7 +47,6 @@ export default function MergePublishPage() {
         identificationNumber: id,
       })
       alert('병합 요청이 전송되었습니다.')
-      setCompletedBooks([]) // 초기화 후 재요청
       fetchBooks(0, true)
     } catch {
       alert('병합 요청 실패')
@@ -79,11 +59,29 @@ export default function MergePublishPage() {
         identificationNumber: id,
       })
       alert('출판 요청 완료')
-      setCompletedBooks([]) // 초기화 후 재요청
       fetchBooks(0, true)
     } catch {
       alert('출판 요청 실패')
     }
+  }
+
+  const handlePreview = async (book) => {
+    try {
+      const response = await axiosInstance.get(`/api/voice/preview/${book.identificationNumber}`, {
+        responseType: 'blob',
+      })
+      const audioUrl = URL.createObjectURL(response.data)
+      setAudioModal({ isOpen: true, src: audioUrl, title: book.title })
+    } catch (err) {
+      alert('미리듣기 파일을 불러오는데 실패했습니다.')
+    }
+  }
+
+  const closeAudioModal = () => {
+    if (audioModal.src) {
+      URL.revokeObjectURL(audioModal.src)
+    }
+    setAudioModal({ isOpen: false, src: null, title: null })
   }
 
   const getStatusText = (status) => {
@@ -104,8 +102,6 @@ export default function MergePublishPage() {
   }
 
   const BookItem = ({ book }) => {
-    const navigate = useNavigate();
-  
     return (
       <li
         key={book.identificationNumber}
@@ -121,13 +117,6 @@ export default function MergePublishPage() {
           <div className="flex gap-3">
             {book.mergeStatus === 'FRAGMENTS_VOICE_GENERATED' && (
               <>
-                <button
-                  onClick={() => navigate(`/voice-edit/${book.identificationNumber}`)}
-                  className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
-                  title="병합 가능 음성 청취 및 수정 페이지로 이동"
-                >
-                  음성 확인 / 수정
-                </button>
                 <button
                   onClick={() => handleMergeRequest(book.identificationNumber)}
                   className="px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
@@ -151,11 +140,10 @@ export default function MergePublishPage() {
                   출판하기
                 </button>
                 <button
-                  onClick={() => navigate(`/voice-edit/${book.identificationNumber}`)}
-                  className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
-                  title="병합된 음성 듣기 및 편집"
+                  onClick={() => handlePreview(book)}
+                  className="px-4 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 transition"
                 >
-                  병합된 음성 듣기
+                  미리 듣기
                 </button>
               </>
             )}
@@ -189,8 +177,9 @@ export default function MergePublishPage() {
               <button
                 onClick={onLoadMore}
                 className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md shadow-sm transition"
+                disabled={loading}
               >
-                더 보기
+                {loading ? '로딩 중...' : '더 보기'}
               </button>
             </div>
           )}
@@ -199,9 +188,29 @@ export default function MergePublishPage() {
     </section>
   )
 
+  const AudioPreviewModal = ({ isOpen, src, title, onClose }) => {
+    if (!isOpen) return null
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+          <h3 className="text-lg font-semibold mb-4">{title}</h3>
+          <audio src={src} controls autoPlay className="w-full">
+            Your browser does not support the audio element.
+          </audio>
+          <button
+            onClick={onClose}
+            className="mt-4 w-full py-2 bg-gray-200 hover:bg-gray-300 rounded-md"
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   useEffect(() => {
-    fetchBooks(0, true)  // 완료된 작품
-    fetchBooks(0, false) // 진행 중인 작품
+    fetchBooks(0, true)
   }, [])
 
   return (
@@ -212,22 +221,20 @@ export default function MergePublishPage() {
           오디오북 병합 및 출판
         </h1>
         {error && <p className="text-red-500">{error}</p>}
-        {loading && <p className="text-gray-500">로딩 중...</p>}
-
-        <BookList
-          books={inProgressBooks}
-          title="스크립트 생성 진행 중인 작품"
-          onLoadMore={() => fetchBooks(inProgressPage + 1, false)}
-          hasMore={inProgressPage + 1 < inProgressTotalPages}
-        />
 
         <BookList
           books={completedBooks}
           title="스크립트 생성 완료된 작품"
-          onLoadMore={() => fetchBooks(completedPage + 1, true)}
+          onLoadMore={() => fetchBooks(completedPage + 1, false)}
           hasMore={completedPage + 1 < completedTotalPages}
         />
       </main>
+      <AudioPreviewModal
+        isOpen={audioModal.isOpen}
+        src={audioModal.src}
+        title={audioModal.title}
+        onClose={closeAudioModal}
+      />
     </div>
   )
 }
