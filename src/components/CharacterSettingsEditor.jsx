@@ -43,6 +43,11 @@ const VOICE_NAME_TO_ID = {
   'PATRICK': 'ODq5zmih8GrVes37Dizd',
   'RYAN': 'wViXBPUzp2ZZixB1xQuM',
   'THOMAS': 'GBv7mTt0atIp3Br8iCZE',
+  'LEONIDAS': 'YKrm0N1EAM9Bw27j8kuD',
+  'HARRY_KIM': 'pb3lVZVjdFWbkhPKlelB',
+  'HUNMIN': 'MpbDJfQJUYUnp0i1QvOZ',
+  'ROSA_OH': 'sf8Bpb1IU97NI9BHSMRf',
+  'SUNNY': '4p0HBzAAGyju0nYfNntV',
   'NO_VOICE': 'NO_VOICE'
 }
 
@@ -93,6 +98,11 @@ const VOICE_OPTIONS = [
   { label: '남성, 활발하고 친근한 음색 (Patrick)', value: 'PATRICK' },
   { label: '남성, 시원하고 현대적인 음색 (Ryan)', value: 'RYAN' },
   { label: '남성, 안정되고 신뢰감 있는 음색 (Thomas)', value: 'THOMAS' },
+  { label: '남성, 슬픈 남자 (Leonidas)', value: 'LEONIDAS' },
+  { label: '남성, 날티나는 남자 (Harry Kim)', value: 'HARRY_KIM' },
+  { label: '남성, 남학생 (Hunmin)', value: 'HUNMIN' },
+  { label: '여성, 여학생 (Rosa Oh)', value: 'ROSA_OH' },
+  { label: '여성, 쓸쓸한 아내 (Sunny)', value: 'SUNNY' },
 
   { label: '음성 없음 (NO_VOICE)', value: 'NO_VOICE' }
 ]
